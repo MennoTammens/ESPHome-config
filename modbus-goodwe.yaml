@@ -1,5 +1,6 @@
 esphome:
-  name: modbus
+  name: pv
+  friendly_name: "PV"
   platform: ESP8266
   board: d1_mini
 
@@ -10,9 +11,11 @@ logger:
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: !secret api_key
 
 ota:
-  password: "ac66b32bb32a860377529dfcf3585979"
+  password: !secret ota_password
 
 wifi:
   ssid: !secret wifi_ssid
@@ -20,8 +23,8 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "ESP-Modbus"
-    password: "configesp"
+    ssid: "Goodwe-Modbus Fallback Hotspot"
+    password: !secret ap_fallback_password
 
 captive_portal:
 
@@ -50,79 +53,210 @@ modbus_controller:
 sensor:
   - platform: modbus_controller
     modbus_controller_id: goodwe
+    id: pv_pv1_voltage
+    name: "PV1 voltage"
+    address: 0x0300
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_pv2_voltage
+    name: "PV2 voltage"
+    address: 0x0301
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_pv1_current
+    name: "PV1 current"
+    address: 0x0302
+    unit_of_measurement: "A"
+    device_class: current
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_pv2_current
+    name: "PV2 current"
+    address: 0x0303
+    unit_of_measurement: "A"
+    device_class: current
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_ac1_voltage
+    name: "AC1 voltage"
+    address: 0x0304
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_ac2_voltage
+    name: "AC2 voltage"
+    address: 0x0305
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_ac3_voltage
+    name: "AC3 voltage"
+    address: 0x0306
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_ac1_current
+    name: "AC1 current"
+    address: 0x0307
+    unit_of_measurement: "A"
+    device_class: current
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_ac2_current
+    name: "AC2 current"
+    address: 0x0308
+    unit_of_measurement: "A"
+    device_class: current
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_ac3_current
+    name: "AC3 current"
+    address: 0x0309
+    unit_of_measurement: "A"
+    device_class: current
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+    register_count: 4 # skip 0x30A - 0x30C
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe  
+    id: pv_feeding_power
+    name: "Feeding Power"
+    address: 0x030D
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 0
+    register_count: 2 # skip 0x30E
+
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
     id: pv_temperature
     name: "Temperature"
     address: 0x030F
-    unit_of_measurement: "C"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
     register_type: holding
     value_type: S_WORD
     accuracy_decimals: 1
     filters:
       - multiply: 0.1
-
-  - platform: modbus_controller
-    modbus_controller_id: goodwe  
-    id: pv_power
-    name: "Feeding Power"
-    address: 0x0233
-    unit_of_measurement: "W"
-    register_type: holding
-    value_type: U_WORD
-    accuracy_decimals: 0
+    register_count: 3 # skip 0x310 and 0x311
 
   - platform: modbus_controller
     modbus_controller_id: goodwe
     id: pv_total_energy
     name: "Total Energy"
-    address: 0x0313
+    address: 0x0312
     unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total
     register_type: holding
-    value_type: U_WORD
+    value_type: U_DWORD
     accuracy_decimals: 1
     filters:
       - multiply: 0.1
-
-  - platform: modbus_controller
-    modbus_controller_id: goodwe
-    id: pv_day_energy
-    name: "Day Energy"
-    address: 0x0236
-    unit_of_measurement: "kWh"
-    register_type: holding
-    value_type: U_WORD
-    accuracy_decimals: 1
-    filters:
-      - multiply: 0.1
-
-  - platform: modbus_controller
-    modbus_controller_id: goodwe
-    id: pv_e_day
-    name: "E-Day"
-    address: 0x0320
-    unit_of_measurement: "kW"
-    register_type: holding
-    value_type: U_WORD
-    accuracy_decimals: 1
-    filters:
-      - multiply: 0.1
-
-  - platform: modbus_controller
-    modbus_controller_id: goodwe
-    id: pv_p_ac
-    name: "Pac"
-    address: 0x0353
-    unit_of_measurement: "W"
-    register_type: holding
-    value_type: U_WORD
-    accuracy_decimals: 0
 
   - platform: modbus_controller
     modbus_controller_id: goodwe
     id: pv_total_hours
     name: "Total Hours"
     address: 0x0314
-    unit_of_measurement: "H"
+    unit_of_measurement: "h"
+    device_class: duration
+    state_class: total
     register_type: holding
     value_type: U_DWORD
     accuracy_decimals: 0
+    register_count: 12 # skip 0x316 - 0x31E
 
+  - platform: modbus_controller
+    modbus_controller_id: goodwe
+    id: pv_day_energy
+    name: "Day Energy"
+    address: 0x0320
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
